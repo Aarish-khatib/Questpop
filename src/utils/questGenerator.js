@@ -11,12 +11,10 @@ function detectCategory(goal) {
   const text = goal.toLowerCase();
 
   for (const [category, keywords] of Object.entries(categoryKeywords)) {
-    // Match whole words or phrases, not fragments inside unrelated words.
-    // For example, "happy" should not match the "app" keyword.
-    const match = keywords.some((keyword) => {
-      const escaped = keyword.replace(/[.*+?^\x24{}()|[\]\\]/g, "\\    const match = keywords.some((keyword) => text.includes(keyword));");
-      return new RegExp(`(^|[^a-z0-9])${escaped}(?=$|[^a-z0-9])`, "i").test(text);
-    });
+    // Require word boundaries so "happy" does not match "app".
+    const match = keywords.some((keyword) =>
+      new RegExp(`(^|[^a-z0-9])${keyword}(?=$|[^a-z0-9])`, "i").test(text)
+    );
 
     if (match) {
       return category;
