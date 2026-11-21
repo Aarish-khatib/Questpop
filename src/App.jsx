@@ -61,6 +61,8 @@ export default function App() {
       setToast("");
     }, []);
 
+  const closeHistory = useCallback(() => setHistoryOpen(false), []);
+
   function handleCompleteStep() {
     const result =
       completeCurrentStep();
@@ -257,9 +259,7 @@ export default function App() {
         open={historyOpen}
         history={history}
         stats={stats}
-        onClose={() =>
-          setHistoryOpen(false)
-        }
+        onClose={closeHistory}
         onRemove={
           removeHistoryQuest
         }

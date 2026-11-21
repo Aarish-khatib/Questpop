@@ -1,4 +1,5 @@
-﻿import { energyLevels } from "../data/questTemplates.js";
+import { useEffect, useRef } from "react";
+import { energyLevels } from "../data/questTemplates.js";
 
 function formatDate(timestamp) {
   if (!timestamp) {
@@ -21,6 +22,52 @@ export default function HistoryPanel({
   onRemove,
   onClear,
 }) {
+  const panelRef = useRef(null);
+  const closeButtonRef = useRef(null);
+
+  useEffect(() => {
+    if (!open) return undefined;
+
+    const previouslyFocused = document.activeElement;
+    closeButtonRef.current?.focus();
+
+    function handleKeyDown(event) {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        onClose();
+        return;
+      }
+
+      if (event.key !== "Tab" || !panelRef.current) return;
+
+      const focusable = Array.from(
+        panelRef.current.querySelectorAll(
+          'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        )
+      );
+      if (focusable.length === 0) {
+        event.preventDefault();
+        return;
+      }
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      if (previouslyFocused?.isConnected) previouslyFocused.focus();
+    };
+  }, [open, onClose]);
+
   if (!open) {
     return null;
   }
@@ -61,7 +108,10 @@ export default function HistoryPanel({
     >
       <aside
         className="history-panel"
-        aria-label="Quest history"
+        ref={panelRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="quest-history-title"
       >
         <div className="history-header">
           <div>
@@ -69,7 +119,7 @@ export default function HistoryPanel({
               ⚡ YOUR RUN
             </span>
 
-            <h2>
+            <h2 id="quest-history-title">
               QUEST <span>HISTORY</span>
             </h2>
           </div>
@@ -77,6 +127,7 @@ export default function HistoryPanel({
           <button
             type="button"
             className="history-close"
+            ref={closeButtonRef}
             onClick={onClose}
             aria-label="Close history"
           >
