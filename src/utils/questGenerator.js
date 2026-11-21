@@ -1,7 +1,7 @@
 import {
   categoryKeywords,
   energyLevels,
-} from "../data/questTemplates";
+} from "../data/questTemplates.js";
 
 function cleanGoal(goal) {
   return goal.trim().replace(/\s+/g, " ");
@@ -11,7 +11,12 @@ function detectCategory(goal) {
   const text = goal.toLowerCase();
 
   for (const [category, keywords] of Object.entries(categoryKeywords)) {
-    const match = keywords.some((keyword) => text.includes(keyword));
+    // Match whole words or phrases, not fragments inside unrelated words.
+    // For example, "happy" should not match the "app" keyword.
+    const match = keywords.some((keyword) => {
+      const escaped = keyword.replace(/[.*+?^\x24{}()|[\]\\]/g, "\\    const match = keywords.some((keyword) => text.includes(keyword));");
+      return new RegExp(`(^|[^a-z0-9])${escaped}(?=$|[^a-z0-9])`, "i").test(text);
+    });
 
     if (match) {
       return category;
