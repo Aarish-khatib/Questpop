@@ -53,3 +53,31 @@ test("does not treat an empty completed quest as a finished mission", () => {
   assert.equal(quest.completed, false);
   assert.equal(quest.currentIndex, 0);
 });
+
+test("keeps the next valid step when invalid saved steps precede the cursor", () => {
+  const quest = normalizeSavedQuest({
+    steps: [null, validSteps[0], validSteps[1]],
+    currentIndex: 2,
+  });
+  assert.equal(quest.currentIndex, 1);
+  assert.equal(quest.steps[quest.currentIndex].id, "b");
+  assert.equal(quest.completed, false);
+});
+
+test("does not mark a quest complete when an invalid step is removed ahead of the cursor", () => {
+  const quest = normalizeSavedQuest({
+    steps: [validSteps[0], null, validSteps[1]],
+    currentIndex: 2,
+  });
+  assert.equal(quest.currentIndex, 1);
+  assert.equal(quest.completed, false);
+});
+
+test("still completes a saved quest when its original cursor is at the end", () => {
+  const quest = normalizeSavedQuest({
+    steps: [validSteps[0], null, validSteps[1]],
+    currentIndex: 3,
+  });
+  assert.equal(quest.completed, true);
+  assert.equal(quest.currentIndex, 2);
+});
