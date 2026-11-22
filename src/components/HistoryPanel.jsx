@@ -1,4 +1,9 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import {
+  createHistoryBackup,
+  parseHistoryBackup,
+  MAX_BACKUP_BYTES,
+} from "../utils/historyBackup.js";
 import { energyLevels } from "../data/questTemplates.js";
 
 function formatDate(timestamp) {
@@ -21,9 +26,12 @@ export default function HistoryPanel({
   onClose,
   onRemove,
   onClear,
+  onRestore,
 }) {
   const panelRef = useRef(null);
   const closeButtonRef = useRef(null);
+  const fileInputRef = useRef(null);
+  const [backupMessage, setBackupMessage] = useState("");
 
   useEffect(() => {
     if (!open) return undefined;
@@ -97,6 +105,48 @@ export default function HistoryPanel({
     }
   }
 
+  function handleExport() {
+    try {
+      const backup = createHistoryBackup(safeHistory);
+      const blob = new Blob([backup], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `questpop-history-${new Date().toISOString().slice(0, 10)}.json`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 2000);
+      setBackupMessage("History backup prepared. Keep your JSON file somewhere safe.");
+    } catch (error) {
+      setBackupMessage(error instanceof Error ? error.message : "Could not export history.");
+    }
+  }
+
+  async function handleImportFile(event) {
+    const input = event.currentTarget;
+    const file = input.files?.[0];
+    input.value = "";
+    if (!file) return;
+
+    if (file.size > MAX_BACKUP_BYTES) {
+      setBackupMessage("Backup is too large. Choose a QuestPop JSON file under 1 MB.");
+      return;
+    }
+
+    try {
+      const restored = parseHistoryBackup(await file.text());
+      const confirmed = window.confirm(
+        `Restore ${restored.length} completed quest(s) from this backup? This replaces your current ${safeHistory.length} saved quest(s). Your active quest is not changed.`
+      );
+      if (!confirmed) return;
+      onRestore(restored);
+      setBackupMessage(`Restored ${restored.length} completed quest(s).`);
+    } catch (error) {
+      setBackupMessage(error instanceof Error ? error.message : "Could not read this backup.");
+    }
+  }
+
   return (
     <div
       className="history-overlay"
@@ -164,6 +214,42 @@ export default function HistoryPanel({
             <span>FOCUS MIN</span>
           </div>
         </div>
+
+        <section className="history-backup" aria-label="History backup tools">
+          <strong>YOUR QUESTS, YOUR DATA</strong>
+          <p>
+            Export your completed quests to a local JSON file, or restore
+            an earlier QuestPop backup. No account or cloud upload required.
+          </p>
+          <div className="history-backup-actions">
+            <button
+              type="button"
+              disabled={safeHistory.length === 0}
+              onClick={handleExport}
+            >
+              EXPORT BACKUP
+            </button>
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+            >
+              RESTORE BACKUP
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".json,application/json"
+              aria-label="Choose QuestPop history backup"
+              onChange={handleImportFile}
+              hidden
+            />
+          </div>
+          {backupMessage && (
+            <p className="history-backup-status" role="status">
+              {backupMessage}
+            </p>
+          )}
+        </section>
 
         <div className="history-list-header">
           <span>COMPLETED QUESTS</span>
