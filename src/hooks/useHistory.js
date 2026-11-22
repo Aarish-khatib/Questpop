@@ -44,6 +44,11 @@ export default function useHistory() {
     setHistory([]);
   }
 
+  function restoreHistory(completedQuests) {
+    // Already validated by parseHistoryBackup before the UI calls this.
+    setHistory(completedQuests);
+  }
+
   const todayKey = new Date().toDateString();
 
   const completedToday = history.filter((quest) => {
@@ -94,5 +99,6 @@ export default function useHistory() {
     addQuest,
     removeQuest,
     clearHistory,
+    restoreHistory,
   };
 }

@@ -37,6 +37,7 @@ export default function App() {
     removeHistoryQuest,
 
     clearHistory,
+    restoreHistory,
   } = useQuest();
 
   const [
@@ -266,6 +267,7 @@ export default function App() {
         onClear={
           clearHistory
         }
+        onRestore={restoreHistory}
       />
 
       <Toast
