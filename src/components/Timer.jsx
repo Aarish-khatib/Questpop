@@ -55,35 +55,17 @@ export default function Timer({
       </div>
 
       <div className="timer-controls">
-        {!isRunning && !finished && (
-          <button
-            type="button"
-            className="timer-main-button"
-            onClick={start}
-          >
-            ▶ START TIMER
-          </button>
-        )}
-
-        {isRunning && (
-          <button
-            type="button"
-            className="timer-main-button"
-            onClick={pause}
-          >
-            ⏸ PAUSE
-          </button>
-        )}
-
-        {finished && (
-          <button
-            type="button"
-            className="timer-main-button"
-            onClick={reset}
-          >
-            ↻ AGAIN
-          </button>
-        )}
+        <button
+          type="button"
+          className="timer-main-button"
+          onClick={finished ? reset : isRunning ? pause : start}
+        >
+          {finished
+            ? "↻ AGAIN"
+            : isRunning
+              ? "⏸ PAUSE"
+              : "▶ START TIMER"}
+        </button>
       </div>
     </div>
   );
