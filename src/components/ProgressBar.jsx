@@ -17,9 +17,11 @@ export default function ProgressBar({
       <div
         className="progress-track"
         role="progressbar"
+        aria-label="Quest completion"
         aria-valuemin="0"
         aria-valuemax="100"
-        aria-valuenow={progress}
+        aria-valuenow={Math.max(0, Math.min(100, Number(progress) || 0))}
+        aria-valuetext={`${Math.max(0, Math.min(currentIndex, totalSteps))} of ${totalSteps} missions completed`}
       >
         <div
           className="progress-fill"
@@ -29,7 +31,7 @@ export default function ProgressBar({
         />
       </div>
 
-      <div className="progress-dots">
+      <div className="progress-dots" aria-hidden="true">
         {Array.from({
           length: totalSteps,
         }).map((_, index) => (
