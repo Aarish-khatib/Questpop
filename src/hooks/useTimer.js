@@ -1,66 +1,66 @@
-import {
-  useEffect,
-  useState,
-} from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function useTimer(initialSeconds = 600) {
-  const [secondsLeft, setSecondsLeft] =
-    useState(initialSeconds);
-
-  const [isRunning, setIsRunning] =
-    useState(false);
+  const [secondsLeft, setSecondsLeft] = useState(initialSeconds);
+  const [isRunning, setIsRunning] = useState(false);
+  const deadlineRef = useRef(null);
 
   useEffect(() => {
+    deadlineRef.current = null;
     setSecondsLeft(initialSeconds);
     setIsRunning(false);
   }, [initialSeconds]);
 
   useEffect(() => {
-    if (!isRunning) {
-      return undefined;
-    }
+    if (!isRunning) return undefined;
 
-    if (secondsLeft <= 0) {
-      setIsRunning(false);
-      return undefined;
-    }
+    // Count elapsed wall-clock time, not interval callbacks. Browsers throttle
+    // intervals in background tabs, so subtracting one per tick drifts badly.
+    const update = () => {
+      const remaining = Math.max(
+        0,
+        Math.ceil((deadlineRef.current - Date.now()) / 1000)
+      );
+      setSecondsLeft(remaining);
+      if (remaining === 0) {
+        deadlineRef.current = null;
+        setIsRunning(false);
+      }
+    };
 
-    const interval = window.setInterval(() => {
-      setSecondsLeft((current) => {
-        if (current <= 1) {
-          setIsRunning(false);
-          return 0;
-        }
-
-        return current - 1;
-      });
-    }, 1000);
+    update();
+    const interval = window.setInterval(update, 250);
+    const onVisibilityChange = () => update();
+    document.addEventListener("visibilitychange", onVisibilityChange);
 
     return () => {
       window.clearInterval(interval);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
     };
-  }, [isRunning, secondsLeft]);
+  }, [isRunning]);
 
   function start() {
-    if (secondsLeft > 0) {
-      setIsRunning(true);
-    }
+    if (isRunning || secondsLeft <= 0) return;
+    deadlineRef.current = Date.now() + secondsLeft * 1000;
+    setIsRunning(true);
   }
 
   function pause() {
+    if (!isRunning) return;
+    const remaining = Math.max(
+      0,
+      Math.ceil((deadlineRef.current - Date.now()) / 1000)
+    );
+    deadlineRef.current = null;
+    setSecondsLeft(remaining);
     setIsRunning(false);
   }
 
   function reset() {
+    deadlineRef.current = null;
     setIsRunning(false);
     setSecondsLeft(initialSeconds);
   }
 
-  return {
-    secondsLeft,
-    isRunning,
-    start,
-    pause,
-    reset,
-  };
+  return { secondsLeft, isRunning, start, pause, reset };
 }
