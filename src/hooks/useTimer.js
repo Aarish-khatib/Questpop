@@ -29,7 +29,9 @@ export default function useTimer(initialSeconds = 600) {
     };
 
     update();
-    // The UI displays whole seconds; polling four times a second adds\n    // unnecessary work. Visibility changes still force an immediate refresh.\n    const interval = window.setInterval(update, 1000);
+    // The UI displays whole seconds; polling four times a second adds
+    // unnecessary work. Visibility changes still force an immediate refresh.
+    const interval = window.setInterval(update, 1000);
     const onVisibilityChange = () => update();
     document.addEventListener("visibilitychange", onVisibilityChange);
 
