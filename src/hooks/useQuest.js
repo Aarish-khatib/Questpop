@@ -1,4 +1,4 @@
-﻿import useLocalStorage from "./useLocalStorage.js";
+import useLocalStorage from "./useLocalStorage.js";
 import useHistory from "./useHistory.js";
 import { createQuestPlan } from "../utils/questGenerator.js";
 
@@ -40,14 +40,24 @@ export default function useQuest() {
     clearHistory,
   } = useHistory();
 
-  const quest =
-    storedQuest &&
-    typeof storedQuest === "object"
-      ? {
-          ...EMPTY_QUEST,
-          ...storedQuest,
-        }
-      : EMPTY_QUEST;
+  // Browser storage can contain stale or malformed data from older versions.
+  // Keep the UI usable rather than crashing when saved quest fields are invalid.
+  const saved = storedQuest && typeof storedQuest === "object" &&
+    !Array.isArray(storedQuest) ? storedQuest : {};
+  const steps = Array.isArray(saved.steps)
+    ? saved.steps.filter((step) => step && typeof step === "object" && !Array.isArray(step))
+    : [];
+  const currentIndex = Number.isInteger(saved.currentIndex)
+    ? Math.max(0, Math.min(saved.currentIndex, steps.length))
+    : 0;
+  const quest = {
+    ...EMPTY_QUEST,
+    ...saved,
+    goal: typeof saved.goal === "string" ? saved.goal : "",
+    steps,
+    currentIndex,
+    completed: saved.completed === true || (steps.length > 0 && currentIndex === steps.length),
+  };
 
   function startQuest(goal, energy = "normal") {
     const cleanGoal = goal.trim();
