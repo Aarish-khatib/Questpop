@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { secondsUntil } from "../utils/timerClock.js";
 
 export default function useTimer(initialSeconds = 600) {
   const [secondsLeft, setSecondsLeft] = useState(initialSeconds);
@@ -17,10 +18,7 @@ export default function useTimer(initialSeconds = 600) {
     // Count elapsed wall-clock time, not interval callbacks. Browsers throttle
     // intervals in background tabs, so subtracting one per tick drifts badly.
     const update = () => {
-      const remaining = Math.max(
-        0,
-        Math.ceil((deadlineRef.current - Date.now()) / 1000)
-      );
+      const remaining = secondsUntil(deadlineRef.current);
       setSecondsLeft(remaining);
       if (remaining === 0) {
         deadlineRef.current = null;
@@ -29,7 +27,9 @@ export default function useTimer(initialSeconds = 600) {
     };
 
     update();
-    const interval = window.setInterval(update, 250);
+    // Whole-second display needs at most one update per second.
+    // Visibility changes trigger an immediate refresh.
+    const interval = window.setInterval(update, 1000);
     const onVisibilityChange = () => update();
     document.addEventListener("visibilitychange", onVisibilityChange);
 
@@ -47,10 +47,7 @@ export default function useTimer(initialSeconds = 600) {
 
   function pause() {
     if (!isRunning) return;
-    const remaining = Math.max(
-      0,
-      Math.ceil((deadlineRef.current - Date.now()) / 1000)
-    );
+    const remaining = secondsUntil(deadlineRef.current);
     deadlineRef.current = null;
     setSecondsLeft(remaining);
     setIsRunning(false);
