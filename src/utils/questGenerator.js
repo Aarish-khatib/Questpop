@@ -4,7 +4,7 @@ import {
 } from "../data/questTemplates.js";
 
 function cleanGoal(goal) {
-  return goal.trim().replace(/\s+/g, " ");
+  return typeof goal === "string" ? goal.trim().replace(/\s+/g, " ") : "";
 }
 
 function detectCategory(goal) {
