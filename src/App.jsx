@@ -85,6 +85,17 @@ export default function App() {
     }
   }
 
+  function handleReplayQuest(item) {
+    if (hasQuest && !quest.completed && !window.confirm(
+      "Replace your current quest with this completed goal?"
+    )) return;
+
+    if (startQuest(item.goal, item.energy)) {
+      setHistoryOpen(false);
+      setToast("QUEST RESTARTED!");
+    }
+  }
+
   function handleNewQuest() {
     if (
       hasQuest &&
@@ -268,6 +279,7 @@ export default function App() {
           clearHistory
         }
         onRestore={restoreHistory}
+        onReplay={handleReplayQuest}
       />
 
       <Toast
