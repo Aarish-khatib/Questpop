@@ -39,6 +39,7 @@ export default function useQuest() {
     addQuest,
     removeQuest,
     clearHistory,
+    restoreHistory,
   } = useHistory();
 
   const quest = normalizeSavedQuest(storedQuest);
@@ -140,5 +141,6 @@ export default function useQuest() {
     resetQuest,
     removeHistoryQuest: removeQuest,
     clearHistory,
+    restoreHistory,
   };
 }
