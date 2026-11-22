@@ -1,6 +1,12 @@
 import { useState } from "react";
 import EnergyPicker from "./EnergyPicker";
 
+const STARTER_GOALS = [
+  "Study for 20 minutes",
+  "Tidy my workspace",
+  "Plan my next project",
+];
+
 export default function QuestInput({
   onStart,
 }) {
@@ -53,6 +59,25 @@ export default function QuestInput({
 
         <div className="character-count">
           {goal.length}/140
+        </div>
+
+        <div aria-label="Quick start goal examples">
+          <p className="input-footnote">
+            Need an idea? Pick a starting goal:
+          </p>
+          <div className="starter-goals">
+            {STARTER_GOALS.map((example) => (
+              <button
+                key={example}
+                type="button"
+                className="timer-reset"
+                onClick={() => setGoal(example)}
+                aria-label={`Use goal: ${example}`}
+              >
+                {example}
+              </button>
+            ))}
+          </div>
         </div>
 
         <div className="field-label energy-label">
