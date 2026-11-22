@@ -44,7 +44,11 @@ export default function Timer({
         </button>
       </div>
 
-      <div className="timer-time">
+      <div
+        className="timer-time"
+        role={finished ? "status" : "timer"}
+        aria-label={finished ? "Focus timer finished" : `Focus timer: ${Math.floor(secondsLeft / 60)} minutes and ${secondsLeft % 60} seconds remaining`}
+      >
         {finished
           ? "DONE!"
           : formatTime(secondsLeft)}
