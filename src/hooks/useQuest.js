@@ -1,6 +1,7 @@
-﻿import useLocalStorage from "./useLocalStorage.js";
+import useLocalStorage from "./useLocalStorage.js";
 import useHistory from "./useHistory.js";
 import { createQuestPlan } from "../utils/questGenerator.js";
+import { normalizeSavedQuest } from "../utils/normalizeSavedQuest.js";
 
 const EMPTY_QUEST = {
   id: null,
@@ -40,14 +41,7 @@ export default function useQuest() {
     clearHistory,
   } = useHistory();
 
-  const quest =
-    storedQuest &&
-    typeof storedQuest === "object"
-      ? {
-          ...EMPTY_QUEST,
-          ...storedQuest,
-        }
-      : EMPTY_QUEST;
+  const quest = normalizeSavedQuest(storedQuest);
 
   function startQuest(goal, energy = "normal") {
     const cleanGoal = goal.trim();
