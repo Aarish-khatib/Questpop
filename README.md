@@ -10,6 +10,7 @@ QuestPop is a productivity web app that breaks overwhelming goals into small, ac
 - Choose your energy level
 - Focus with a built-in timer
 - Track progress, quest history, and statistics
+- Export completed quest history to a JSON file and restore it on another browser
 - Responsive interface
 - No sign-up required
 
@@ -36,9 +37,22 @@ Open the URL printed by the development server.
 npm run build
 ```
 
-## Data and limitations
+## Data and backups
 
-Quest progress is stored locally in your browser. Clearing browser storage may remove saved progress. The feature list is based on the current project documentation; actual runtime behavior still needs independent verification.
+Quest progress is stored locally in your browser. Clearing site data or changing devices may remove saved progress.
+
+To back up completed quests, open **History → Export backup**. Save the resulting JSON file somewhere you control. To recover, open **History → Restore backup**, choose the file, and confirm the replacement. Restoring replaces *completed quest history* but leaves any active quest unchanged. Backups are downloaded and read locally; no cloud upload or sign-in is involved.
+
+QuestPop accepts only versioned, validated JSON backups up to 1 MB and stores up to 50 completed quests. Backups may contain personal goal text, so keep them private. Browser storage can still be unavailable or cleared by browser settings.
+
+## Verification
+
+```bash
+npm test
+npm run build
+```
+
+The native Node test suite covers quest planning and backup parsing. GitHub Actions runs tests and builds on pushes and pull requests. Browser interactions should still be checked manually on supported devices.
 
 ## Why QuestPop?
 
