@@ -27,6 +27,7 @@ export default function HistoryPanel({
   onRemove,
   onClear,
   onRestore,
+  onReplay,
 }) {
   const panelRef = useRef(null);
   const closeButtonRef = useRef(null);
@@ -328,6 +329,15 @@ export default function HistoryPanel({
                       </span>
                     </div>
                   </div>
+
+                  <button
+                    type="button"
+                    onClick={() => onReplay(item)}
+                    aria-label={`Restart ${item.goal || "quest"}`}
+                    title="Start a new quest with this goal and energy"
+                  >
+                    REPLAY
+                  </button>
 
                   <button
                     type="button"
