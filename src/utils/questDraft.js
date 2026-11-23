@@ -52,3 +52,10 @@ export function clearQuestDraft(storage) {
     // Private browsing or disabled storage must never block starting a quest.
   }
 }
+
+/** Clear the saved input only after the quest was actually created. */
+export function startQuestFromDraft(storage, onStart, goal, energy) {
+  if (onStart(goal, energy) !== true) return false;
+  clearQuestDraft(storage);
+  return true;
+}
