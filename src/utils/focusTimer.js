@@ -1,8 +1,12 @@
 export const FOCUS_SECONDS = 120;
 
-export function remainingSeconds(deadline, now = Date.now()) {
+export function remainingMilliseconds(deadline, now = Date.now()) {
   if (!Number.isFinite(deadline) || !Number.isFinite(now)) return 0;
-  return Math.max(0, Math.ceil((deadline - now) / 1000));
+  return Math.max(0, deadline - now);
+}
+
+export function remainingSeconds(deadline, now = Date.now()) {
+  return Math.ceil(remainingMilliseconds(deadline, now) / 1000);
 }
 
 export function formatCountdown(seconds) {
