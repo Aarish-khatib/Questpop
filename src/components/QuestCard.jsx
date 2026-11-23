@@ -1,3 +1,4 @@
+import { useState } from "react";
 import ComicBurst from "./ComicBurst";
 import Timer from "./Timer";
 
@@ -8,6 +9,22 @@ export default function QuestCard({
   totalSteps,
   onComplete,
 }) {
+  const [copyStatus, setCopyStatus] = useState("");
+
+  async function copyStep() {
+    const text = `Goal: ${goal}\nStep ${currentIndex + 1} of ${totalSteps}: ${step.title}\n${step.detail}\nEstimated time: ${step.minutes} minutes`;
+    if (!navigator.clipboard?.writeText) {
+      setCopyStatus("Clipboard unavailable. Select the step text to copy it.");
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopyStatus("Step copied to clipboard.");
+    } catch {
+      setCopyStatus("Copy failed. Select the step text to copy it.");
+    }
+  }
+
   if (!step) {
     return null;
   }
@@ -57,6 +74,11 @@ export default function QuestCard({
         key={step.id}
         minutes={step.minutes}
       />
+
+      <button type="button" onClick={copyStep} aria-label="Copy current quest step">
+        COPY STEP
+      </button>
+      <p role="status" aria-live="polite">{copyStatus}</p>
 
       <button
         className="done-button"
