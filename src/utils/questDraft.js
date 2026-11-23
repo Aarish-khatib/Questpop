@@ -1,3 +1,11 @@
+export function getQuestDraftStorage() {
+  try {
+    return globalThis.localStorage ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export const DRAFT_KEY = "questpop:goal-draft:v1";
 export const MAX_GOAL_LENGTH = 140;
 export const VALID_ENERGIES = ["low", "normal", "high"];
