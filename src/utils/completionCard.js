@@ -13,7 +13,7 @@ export function createCompletionCard(goal) {
     : '';
   const safeGoal = Array.from(normalizedGoal).slice(0, 140).join('');
   if (!safeGoal) throw new Error('A completed goal is required.');
-  const words = safeGoal.match(/.{1,24}(?:\s|$)|\S{1,24}/g) || [];
+  const words = safeGoal.match(/.{1,24}(?:\s|$)|\S{1,24}/gu) || [];
   const lines = [];
   for (const part of words) {
     const text = part.trim();
