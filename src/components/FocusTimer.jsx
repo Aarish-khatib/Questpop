@@ -1,15 +1,17 @@
 import { useEffect, useState } from "react";
-import { FOCUS_SECONDS, formatCountdown, remainingSeconds } from "../utils/focusTimer.js";
+import { FOCUS_SECONDS, formatCountdown, remainingMilliseconds, remainingSeconds } from "../utils/focusTimer.js";
+
+const FOCUS_MS = FOCUS_SECONDS * 1000;
 
 export default function FocusTimer() {
-  const [remaining, setRemaining] = useState(FOCUS_SECONDS);
+  const [remainingMs, setRemainingMs] = useState(FOCUS_MS);
   const [deadline, setDeadline] = useState(null);
 
   useEffect(() => {
     if (deadline === null) return undefined;
     const tick = () => {
-      const next = remainingSeconds(deadline);
-      setRemaining(next);
+      const next = remainingMilliseconds(deadline);
+      setRemainingMs(next);
       if (next === 0) setDeadline(null);
     };
     tick();
@@ -19,19 +21,21 @@ export default function FocusTimer() {
 
   function toggle() {
     if (deadline !== null) {
-      setRemaining(remainingSeconds(deadline));
+      // Preserve fractional seconds: repeated pause/resume must not extend the session.
+      setRemainingMs(remainingMilliseconds(deadline));
       setDeadline(null);
-    } else {
-      setDeadline(Date.now() + remaining * 1000);
+    } else if (remainingMs > 0) {
+      setDeadline(Date.now() + remainingMs);
     }
   }
 
   function reset() {
     setDeadline(null);
-    setRemaining(FOCUS_SECONDS);
+    setRemainingMs(FOCUS_MS);
   }
 
-  const finished = remaining === 0;
+  const remaining = remainingSeconds(remainingMs, 0);
+  const finished = remainingMs === 0;
   return (
     <section className="focus-timer" aria-label="Two-minute focus timer">
       <p className="focus-timer-title">NEED A PUSH? TRY JUST TWO MINUTES.</p>
@@ -40,7 +44,7 @@ export default function FocusTimer() {
       </output>
       <div className="focus-timer-actions">
         <button type="button" onClick={toggle} disabled={finished}>
-          {deadline !== null ? "PAUSE" : remaining === FOCUS_SECONDS ? "START 2 MIN" : "RESUME"}
+          {deadline !== null ? "PAUSE" : remainingMs === FOCUS_MS ? "START 2 MIN" : "RESUME"}
         </button>
         <button type="button" onClick={reset}>RESET</button>
       </div>
