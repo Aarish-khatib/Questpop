@@ -6,11 +6,12 @@ const escapeXml = (value) => value.replace(/[&<>"']/g, (char) => ({
 export function createCompletionCard(goal) {
   // XML 1.0 forbids most C0 controls and unpaired UTF-16 surrogates.
   // Normalize whitespace so pasted multi-line goals stay readable in SVG.
-  const safeGoal = typeof goal === 'string'
+  const normalizedGoal = typeof goal === 'string'
     ? goal.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\uFFFE\uFFFF]/g, '')
       .replace(/[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/g, '')
-      .replace(/\s+/g, ' ').trim().slice(0, 140)
+      .replace(/\s+/g, ' ').trim()
     : '';
+  const safeGoal = Array.from(normalizedGoal).slice(0, 140).join('');
   if (!safeGoal) throw new Error('A completed goal is required.');
   const words = safeGoal.match(/.{1,24}(?:\s|$)|\S{1,24}/g) || [];
   const lines = [];
