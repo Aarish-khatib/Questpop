@@ -20,9 +20,10 @@ export function createCompletionCard(goal) {
     if (text && lines.length < 6) lines.push(text);
   }
   const tspans = lines.map((line, index) =>
-    `<tspan x="480" dy="${index === 0 ? 0 : 52}">${escapeXml(line)}</tspan>`
+    `<tspan x="480" dy="${index === 0 ? 0 : 40}">${escapeXml(line)}</tspan>`
   ).join('');
-  const y = 360 - (lines.length - 1) * 26;
+  // Keep all goal lines above the footer, including six-line goals.
+  const y = 345 - (lines.length - 1) * 20;
   return `<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-label="QuestPop completion card">
 <rect width="960" height="540" fill="#171328"/>
 <rect x="24" y="24" width="912" height="492" rx="22" fill="#261d42" stroke="#fce04a" stroke-width="6"/>
