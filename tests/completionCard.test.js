@@ -34,3 +34,11 @@ test('removes unpaired surrogates while retaining valid emoji', () => {
   assert.doesNotMatch(svg, /\uD800/);
   assert.match(svg, /🚀/);
 });
+
+test('wraps emoji-heavy goals without splitting UTF-16 surrogate pairs', () => {
+  const svg = createCompletionCard('A' + '🚀'.repeat(60));
+  const lines = [...svg.matchAll(/<tspan[^>]*>(.*?)<\/tspan>/g)].map((match) => match[1]);
+  assert.ok(lines.length > 1);
+  assert.ok(lines.every((line) => !/[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/.test(line)));
+  assert.equal(lines.join(''), 'A' + '🚀'.repeat(60));
+});
