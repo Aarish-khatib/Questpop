@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
-import { loadQuestDraft, saveQuestDraft, clearQuestDraft } from "../utils/questDraft.js";
+import { getQuestDraftStorage, loadQuestDraft, saveQuestDraft, clearQuestDraft } from "../utils/questDraft.js";
 import EnergyPicker from "./EnergyPicker";
 
 export default function QuestInput({
   onStart,
 }) {
-  const [goal, setGoal] = useState(() => loadQuestDraft(globalThis.localStorage)?.goal ?? "");
+  const [goal, setGoal] = useState(() => loadQuestDraft(getQuestDraftStorage())?.goal ?? "");
   const [energy, setEnergy] =
-    useState(() => loadQuestDraft(globalThis.localStorage)?.energy ?? "normal");
+    useState(() => loadQuestDraft(getQuestDraftStorage())?.energy ?? "normal");
 
   useEffect(() => {
-    saveQuestDraft(globalThis.localStorage, goal, energy);
+    saveQuestDraft(getQuestDraftStorage(), goal, energy);
   }, [goal, energy]);
 
   function handleSubmit(event) {
@@ -23,7 +23,7 @@ export default function QuestInput({
     }
 
     onStart(cleanGoal, energy);
-    clearQuestDraft(globalThis.localStorage);
+    clearQuestDraft(getQuestDraftStorage());
   }
 
   return (
