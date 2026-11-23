@@ -22,8 +22,10 @@ export default function QuestInput({
       return;
     }
 
-    onStart(cleanGoal, energy);
-    clearQuestDraft(getQuestDraftStorage());
+    // Keep the draft when quest generation rejects the input.
+    if (onStart(cleanGoal, energy) === true) {
+      clearQuestDraft(getQuestDraftStorage());
+    }
   }
 
   return (
