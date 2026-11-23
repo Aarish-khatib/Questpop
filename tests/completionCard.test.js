@@ -47,7 +47,7 @@ test('keeps six lines of goal text clear of the SVG footer', () => {
   const svg = createCompletionCard('A'.repeat(140));
   const lines = [...svg.matchAll(/<tspan x="480" dy="(\d+)">/g)];
   assert.equal(lines.length, 6);
-  const start = Number(svg.match(/<text x="480" y="(\d+)" text-anchor="middle" font-family="Arial,sans-serif" font-size="36"/)[1]);
+  const start = Number(svg.match(/<text x="480" y="(\d+)" text-anchor="middle" font-family="Arial,sans-serif" font-size="36" font-weight="bold" fill="#ffffff"/)[1]);
   const lastBaseline = start + lines.slice(1).reduce((sum, line) => sum + Number(line[1]), 0);
   assert.ok(lastBaseline <= 445, 'goal text must end above footer');
   assert.ok(start >= 245, 'goal text must start below title');
