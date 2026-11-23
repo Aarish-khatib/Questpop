@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getQuestDraftStorage, loadQuestDraft, saveQuestDraft, clearQuestDraft } from "../utils/questDraft.js";
+import { getQuestDraftStorage, loadQuestDraft, saveQuestDraft, startQuestFromDraft } from "../utils/questDraft.js";
 import EnergyPicker from "./EnergyPicker";
 
 export default function QuestInput({
@@ -22,10 +22,7 @@ export default function QuestInput({
       return;
     }
 
-    // Keep the draft when quest generation rejects the input.
-    if (onStart(cleanGoal, energy) === true) {
-      clearQuestDraft(getQuestDraftStorage());
-    }
+    startQuestFromDraft(getQuestDraftStorage(), onStart, cleanGoal, energy);
   }
 
   return (
