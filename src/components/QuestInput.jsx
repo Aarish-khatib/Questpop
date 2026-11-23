@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getQuestDraftStorage, loadQuestDraft, saveQuestDraft, startQuestFromDraft } from "../utils/questDraft.js";
+import { getQuestDraftStorage, loadQuestDraft, saveQuestDraft, clearQuestDraft, startQuestFromDraft } from "../utils/questDraft.js";
 import EnergyPicker from "./EnergyPicker";
 
 export default function QuestInput({
@@ -12,6 +12,12 @@ export default function QuestInput({
   useEffect(() => {
     saveQuestDraft(getQuestDraftStorage(), goal, energy);
   }, [goal, energy]);
+
+  function handleDiscardDraft() {
+    setGoal("");
+    setEnergy("normal");
+    clearQuestDraft(getQuestDraftStorage());
+  }
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -59,6 +65,16 @@ export default function QuestInput({
         <div className="character-count">
           {goal.length}/140
         </div>
+
+        {goal.length > 0 && (
+          <button
+            type="button"
+            className="discard-draft-button"
+            onClick={handleDiscardDraft}
+          >
+            DISCARD DRAFT
+          </button>
+        )}
 
         <div className="field-label energy-label">
           HOW MUCH POWER DO YOU HAVE?
