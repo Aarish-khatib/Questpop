@@ -25,12 +25,12 @@ test('limits length and renders bounded text lines', () => {
 });
 
 test('strips XML-invalid control characters and normalizes multiline goals', () => {
-  const svg = createCompletionCard('Ship\\u0001 a\\n working\\tapp');
-  assert.doesNotMatch(svg, /\\u0001/);
+  const svg = createCompletionCard('Ship\u0001 a\n working\tapp');
+  assert.doesNotMatch(svg, /\u0001/);
   assert.match(svg, /Ship a working app/);
 });
 test('removes unpaired surrogates while retaining valid emoji', () => {
-  const svg = createCompletionCard('Finish \\uD800 project 🚀');
-  assert.doesNotMatch(svg, /\\uD800/);
+  const svg = createCompletionCard('Finish \uD800 project 🚀');
+  assert.doesNotMatch(svg, /\uD800/);
   assert.match(svg, /🚀/);
 });
