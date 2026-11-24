@@ -1,4 +1,6 @@
 import ComicBurst from "./ComicBurst";
+import FocusTimer from "./FocusTimer";
+import "./FocusTimer.css";
 
 export default function Hero() {
   return (
@@ -37,6 +39,8 @@ export default function Hero() {
         <span>NO 27-STEP PLAN</span>
         <span>JUST GO</span>
       </div>
+
+      <FocusTimer />
     </section>
   );
 }

@@ -80,3 +80,22 @@ test("rejects altered schema and malformed import step data", () => {
   json.history[0].steps[0].title = "";
   assert.throws(() => parseHistoryBackup(JSON.stringify(json)), /step title/);
 });
+
+
+test("rejects duplicate step IDs in exported and imported history", () => {
+  const duplicateSteps = [
+    { id: "same", title: "First", detail: "First task", minutes: 5 },
+    { id: "same", title: "Second", detail: "Second task", minutes: 8 },
+  ];
+  assert.throws(
+    () => createHistoryBackup([quest({ steps: duplicateSteps })]),
+    /duplicate step IDs/
+  );
+
+  const backup = JSON.parse(createHistoryBackup([quest()]));
+  backup.history[0].steps[1].id = backup.history[0].steps[0].id;
+  assert.throws(
+    () => parseHistoryBackup(JSON.stringify(backup)),
+    /duplicate step IDs/
+  );
+});

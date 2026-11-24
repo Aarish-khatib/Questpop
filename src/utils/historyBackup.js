@@ -58,13 +58,17 @@ export function validateHistory(history) {
       throw new Error("Backups can only contain completed quests.");
     }
 
+    const stepIds = new Set();
     const steps = item.steps.map((step) => {
       if (!object(step)) throw new Error("Backup contains an invalid step.");
       if (!Number.isInteger(step.minutes) || step.minutes < 1 || step.minutes > 1440) {
         throw new Error("Backup contains an invalid step duration.");
       }
+      const stepId = text(step.id, "step ID", 128);
+      if (stepIds.has(stepId)) throw new Error("Backup contains duplicate step IDs.");
+      stepIds.add(stepId);
       return {
-        id: text(step.id, "step ID", 128),
+        id: stepId,
         title: text(step.title, "step title", 200),
         detail: text(step.detail, "step detail", 2000),
         minutes: step.minutes,
