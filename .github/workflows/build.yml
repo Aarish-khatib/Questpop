@@ -37,3 +37,9 @@ jobs:
 
       - name: Build
         run: npm run build
+
+      - name: Test replay in Chrome at desktop and phone sizes
+        run: |
+          python -m venv "$RUNNER_TEMP/replay-env"
+          "$RUNNER_TEMP/replay-env/bin/pip" install playwright==1.56.0
+          "$RUNNER_TEMP/replay-env/bin/python" tests/browser/replay.py
