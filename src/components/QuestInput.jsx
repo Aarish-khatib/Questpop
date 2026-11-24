@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { getQuestDraftStorage, loadQuestDraft, saveQuestDraft, clearQuestDraft, startQuestFromDraft } from "../utils/questDraft.js";
 import EnergyPicker from "./EnergyPicker";
 
+const starterGoals = ["Study for 20 minutes", "Tidy my workspace", "Plan my next project"];
+
 export default function QuestInput({
   onStart,
 }) {
@@ -65,6 +67,20 @@ export default function QuestInput({
         <div className="character-count">
           {goal.length}/140
         </div>
+
+        {!goal && (
+          <div className="starter-goals" role="group" aria-label="Example goals">
+            {starterGoals.map(example => (
+              <button key={example} type="button" className="discard-draft-button"
+                onClick={(event) => {
+                  setGoal(example);
+                  event.currentTarget.form.elements.namedItem("quest-goal")?.focus();
+                }}>
+                {example}
+              </button>
+            ))}
+          </div>
+        )}
 
         {goal.length > 0 && (
           <button

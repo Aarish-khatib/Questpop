@@ -12,6 +12,16 @@ def verify(browser, port, width):
     context = browser.new_context(viewport={"width": width, "height": 820})
     page = context.new_page()
     page.goto(f"http://127.0.0.1:{port}")
+    goal = page.get_by_label("WHAT ARE YOU STUCK ON?")
+    page.get_by_role("button", name="Tidy my workspace").click()
+    expect(goal).to_be_focused()
+    expect(goal).to_have_value("Tidy my workspace")
+    goal.fill("Tidy my desk")
+    page.reload()
+    expect(goal).to_have_value("Tidy my desk")
+    expect(page.get_by_role("group", name="Example goals")).to_have_count(0)
+    page.get_by_role("button", name="DISCARD DRAFT").click()
+    expect(page.get_by_role("group", name="Example goals")).to_be_visible()
     history = [{"id": "finished", "goal": "Practice guitar", "energy": "low",
                 "steps": [], "completedAt": 1700000000000}]
     page.evaluate("(data) => localStorage.setItem('questpop-history', data)", json.dumps(history))

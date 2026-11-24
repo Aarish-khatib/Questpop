@@ -2939,3 +2939,8 @@
       center;
   }
 }
+.starter-goals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
